@@ -25,8 +25,12 @@ public class GameController {
     public Round rockPaperScissors(@RequestParam(value="object") String playersChoice) {
 
         gameStrategy = new RockPaperScissorsStrategy();
+        // Set the strategy depending on game mode. The strategy determines the choices of game moves.
         gameService.setGameStrategy(gameStrategy);
-        gameService.play(playersChoice);
+
+        String computersChoice = gameService.getRandomChoice();
+
+        gameService.play(playersChoice, computersChoice);
 
         return gameService.getRound();
     }

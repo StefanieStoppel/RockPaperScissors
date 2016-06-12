@@ -35,6 +35,9 @@ public class GameService {
     // Result of this game round
     private Round round;
 
+    private String playersChoice;
+    private String computersChoice;
+    private long roundCount;
 
     public GameService() {
     }
@@ -64,16 +67,17 @@ public class GameService {
         return round;
     }
 
-    public void play(String playersChoice) {
-        // Get random choice as computer's choice
-        String computersChoice = getComputersChoice();
+    public void play(String playersChoice, String computersChoice) {
+        // Set playersChoice
+        this.playersChoice = playersChoice;
+        this.computersChoice = computersChoice;
 
         // Map contains: "Player" -> playersChoice, "Computer" -> computersChoice
         Map<String, String> moves = new LinkedHashMap<>();
         moves.put(PLAYER, playersChoice);
         moves.put(COMPUTER, computersChoice);
 
-        long roundCount = roundCounter.incrementAndGet();
+        roundCount = roundCounter.incrementAndGet();
 
         String winner = getWinner(playersChoice, computersChoice);
         String output = createOutput(roundCount, playersChoice, computersChoice);
@@ -108,7 +112,7 @@ public class GameService {
         return output;
     }
 
-    private String getWinner(String playersChoice, String computersChoice) {
+    public String getWinner(String playersChoice, String computersChoice) {
         String winner = null;
         int result = gameStrategy.determineWinner(playersChoice, computersChoice);
         if(result == 1) {
@@ -122,11 +126,23 @@ public class GameService {
     }
 
 
-    private String getComputersChoice() {
+    public String getRandomChoice() {
         if(choices != null) {
             return choices[ThreadLocalRandom.current().nextInt(0, choices.length)];
         } else {
             return "";
         }
+    }
+
+    public String getPlayersChoice() {
+        return playersChoice;
+    }
+
+    public String getComputersChoice() {
+        return computersChoice;
+    }
+
+    public long getRoundCount() {
+        return roundCount;
     }
 }

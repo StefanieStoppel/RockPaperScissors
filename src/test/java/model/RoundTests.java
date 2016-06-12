@@ -2,12 +2,14 @@ package model;
 
 import com.rockpaperscissors.RockPaperScissorsApplication;
 import com.rockpaperscissors.model.Round;
+import com.rockpaperscissors.service.GameService;
 import com.rockpaperscissors.strategy.GameStrategy;
 import com.rockpaperscissors.strategy.RockPaperScissorsStrategy;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -19,50 +21,92 @@ import java.util.concurrent.ThreadLocalRandom;
 @SpringApplicationConfiguration(classes = RockPaperScissorsApplication.class)
 public class RoundTests {
 
+    @Autowired
+    GameService gameService;
+
+    private static final String[] invalidChoices = {"jfshf", "üfj(", "$(§$KE", "", "-4", "..", "papr", "0034358325"};
+
     private Round round;
-    private static final String PLAYER = "Player";
-    private static final String COMPUTER = "Computer";
-    private final String[] hands = {"rock", "paper", "scissors"};
     private GameStrategy gameStrategy = new RockPaperScissorsStrategy();
 
-    private Map<String, String> moves;
     private String playersChoice;
     private String computersChoice;
-    private int winnerIdx;
-    private long roundCount;
 
     @Before
     public void setUp() throws Exception {
         // Random round
-        roundCount = ThreadLocalRandom.current().nextLong(0, 10);
+        gameService.setGameStrategy(gameStrategy);
+    }
 
-        moves = new LinkedHashMap<>();
-        playersChoice = getRandomHand();
-        moves.put(PLAYER, playersChoice);
-        computersChoice = getRandomHand();
-        moves.put(COMPUTER, computersChoice);
+    public void setUpValidChoices() {
+        setUpChoices(true, true);
+    }
 
-        int result = gameStrategy.determineWinner(playersChoice, computersChoice);
-        winnerIdx = -1;
-        if(result == 1) {
-            winnerIdx = 0;
-        } else if(result == -1) {
-            winnerIdx = 1;
-        }
-        this.round = new Round(roundCount, moves, winnerIdx);
+    public void setUpChoices(boolean playersChoiceValid, boolean computersChoiceValid) {
+        playersChoice = playersChoiceValid ? gameService.getRandomChoice() : getRandomInvalidChoice();
+        computersChoice = computersChoiceValid ? gameService.getRandomChoice() : getRandomInvalidChoice();
+    }
+
+    public String getRandomInvalidChoice() {
+        return invalidChoices[ThreadLocalRandom.current().nextInt(0, invalidChoices.length)];
     }
 
     @Test
-    public void testGetters(){
+    public void testValidChoices() {
+        setUpValidChoices();
+        gameService.play(playersChoice, computersChoice);
+        round = gameService.getRound();
+
         Assert.assertNotNull(round);
 
-        Assert.assertEquals(round.getCount(), roundCount);
-        Assert.assertEquals(round.getMoves(), moves);
-        Assert.assertEquals(round.getWinnerId(), winnerIdx);
+        String winner = gameService.getWinner(playersChoice, computersChoice);
+        Assert.assertEquals(winner, round.getWinner());
     }
 
-    private String getRandomHand() {
-        int randIdx = ThreadLocalRandom.current().nextInt(0, 3);
-        return hands[randIdx];
+    @Test
+    public void testInvalidChoices() {
+
+        // 1) Player's choice valid, computer's choice invalid
+        setUpChoices(true, false);
+        gameService.play(playersChoice, computersChoice);
+        round = gameService.getRound();
+
+        Assert.assertNotNull(round);
+        Assert.assertNull(round.getWinner());
+
+        // 2) Player's choice invalid, computer's choice valid
+        setUpChoices(false, true);
+        gameService.play(playersChoice, computersChoice);
+        round = gameService.getRound();
+
+        Assert.assertNotNull(round);
+        Assert.assertNull(round.getWinner());
+
+        // 3) Player's choice invalid, computer's choice invalid
+        setUpChoices(false, false);
+        gameService.play(playersChoice, computersChoice);
+        round = gameService.getRound();
+
+        Assert.assertNotNull(round);
+        Assert.assertNull(round.getWinner());
     }
+
+    @Test
+    public void testRoundWinner() {
+        setUpValidChoices();
+        gameService.play(playersChoice, computersChoice);
+        round = gameService.getRound();
+        String winner = gameService.getWinner(gameService.getPlayersChoice(), gameService.getComputersChoice());
+        Assert.assertEquals(winner, round.getWinner());
+    }
+
+    @Test
+    public void testRoundCount() {
+        setUpValidChoices();
+        gameService.play(playersChoice, computersChoice);
+        round = gameService.getRound();
+        long roundCount = gameService.getRoundCount();
+        Assert.assertEquals(roundCount, round.getCount());
+    }
+
 }
