@@ -21,7 +21,7 @@ public class RockPaperScissorsStrategy implements GameStrategy {
         int result = Integer.MIN_VALUE;
         if(isValidChoice(playersChoice) && isValidChoice(computersChoice)) {
             if(playersChoice.equals(computersChoice)) {
-                result = 0;
+                return 0;
             }
             switch (playersChoice) {
                 case ROCK:
