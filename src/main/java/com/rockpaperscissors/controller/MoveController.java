@@ -1,8 +1,9 @@
-package com.rockpaperscissors;
+package com.rockpaperscissors.controller;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.rockpaperscissors.model.Move;
 import com.rockpaperscissors.strategy.GameStrategy;
 import com.rockpaperscissors.strategy.RockPaperScissorsStrategy;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 //Todo: send request
 
 @RestController
-@RequestMapping(value = "/move")
+@RequestMapping(value = "/")
 public class MoveController {
 
     private static final String resultTemplate = "You played: %s \n The computer played: %s \n";

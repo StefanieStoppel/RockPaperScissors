@@ -1,11 +1,11 @@
-package com.rockpaperscissors;
+package com.rockpaperscissors.model;
 
-class Move {
+public class Move {
 
     private final long round;
     private final String moveType;
 
-    Move(long round, String moveType) {
+    public Move(long round, String moveType) {
         this.round = round;
         this.moveType = moveType;
     }

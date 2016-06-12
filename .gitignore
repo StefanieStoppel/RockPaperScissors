@@ -16,4 +16,7 @@ hs_err_pid*
 
 /RockPaperScissors.iml
 /target/
-/src/main/java/com/rockpaperscissors/model/
+/src/main/java/com/rockpaperscissors/model/PlayableObject.java
+/src/main/java/com/rockpaperscissors/model/Paper.java
+/src/main/java/com/rockpaperscissors/model/Scissors.java
+/src/main/java/com/rockpaperscissors/model/Rock.java
