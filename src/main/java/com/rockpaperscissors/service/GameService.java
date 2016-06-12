@@ -17,6 +17,11 @@ public class GameService {
 
     private static final Logger logger = Logger.getLogger(GameService.class);
 
+    private static final String resultTemplate = "You played: %s \n The computer played: %s \n";
+    private static final String winnerTemplate = "%s wins round %2d.";
+    private static final String drawTemplate = "Round %2d is a draw.";
+    private static final String errorTemplate = "Round %2d was invalid. Reason: %s";
+
     private static final String[] rockPaperScissors = {"rock", "paper", "scissors"};
     private static final String[] rockPaperScissorsWell = {"rock", "paper", "scissors", "well"};
     private String[] choices;
@@ -62,38 +67,60 @@ public class GameService {
     public void play(String playersChoice) {
         // Get random choice as computer's choice
         String computersChoice = getComputersChoice();
-        if(computersChoice.isEmpty()) {
-            round = new Round(roundCounter.incrementAndGet(),
-                                new LinkedHashMap<>(),
-                                Integer.MIN_VALUE);
-            return;
-        }
 
         // Map contains: "Player" -> playersChoice, "Computer" -> computersChoice
         Map<String, String> moves = new LinkedHashMap<>();
         moves.put(PLAYER, playersChoice);
         moves.put(COMPUTER, computersChoice);
 
-        round = new Round(roundCounter.incrementAndGet(),
+        long roundCount = roundCounter.incrementAndGet();
+
+        String winner = getWinner(playersChoice, computersChoice);
+        String output = createOutput(roundCount, playersChoice, computersChoice);
+
+        round = new Round(roundCount,
                             moves,
-                            getWinnerIdx(playersChoice, computersChoice));
+                            winner,
+                            output);
     }
 
-    private int getWinnerIdx(String playersChoice, String computersChoice)  {
-        int winnerIdx = -1;
-        if(gameStrategy != null) {
-            int result = gameStrategy.determineWinner(playersChoice, computersChoice);
-            if(result == 1) {
-                winnerIdx = 0;
-            } else if(result == -1) {
-                winnerIdx = 1;
-            }
+    private String createOutput(long roundCount, String playersChoice, String computersChoice) {
+        String output = "";
+        if(!gameStrategy.isValidChoice(playersChoice)) {
+            output += String.format(errorTemplate, roundCount, "Player's choice was invalid. Please choose a valid game move!");
+        } else if(!gameStrategy.isValidChoice(computersChoice)) {
+            output += String.format(errorTemplate, roundCount, "Computer's choice of game move was invalid.");
         } else {
-            //todo: handle nullpointer
-            logger.error("GameService: No GameStrategy was set.");
+            // Append info about who played what
+            output += String.format(resultTemplate, playersChoice, computersChoice);
+
+            String winner = getWinner(playersChoice, computersChoice);
+            if(winner != null) {
+                if(winner.length() > 0) {
+                    output += String.format(winnerTemplate, winner, roundCount);
+                } else {
+                    output += String.format(drawTemplate, roundCount);
+                }
+            } else {
+                //todo: handle null
+            }
         }
-        return winnerIdx;
+        return output;
     }
+
+    private String getWinner(String playersChoice, String computersChoice) {
+        String winner = null;
+        int result = gameStrategy.determineWinner(playersChoice, computersChoice);
+        if(result == 1) {
+            winner = PLAYER;
+        } else if(result == -1) {
+            winner = COMPUTER;
+        } else if(result == 0) {
+            winner = "";        //draw
+        }
+        return winner;
+    }
+
 
     private String getComputersChoice() {
         if(choices != null) {
