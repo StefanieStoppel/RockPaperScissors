@@ -11,23 +11,29 @@ public class RockPaperScissorsStrategy implements GameStrategy {
     private static final String SCISSORS = "scissors";
 
     @Override
+    public boolean isValidChoice(String choice) {
+        return choice.equals(ROCK) || choice.equals(PAPER) || choice.equals(SCISSORS);
+    }
+
+    @Override
     public int determineWinner(String playersChoice,
-                                          String computersChoice) throws NullPointerException{
-        //todo is this ok? -> no, we need to deal with non-existing objects passed as params
-        int result = 0;
-        if(playersChoice.equals(computersChoice)) {
-            return result;
-        }
-        switch (playersChoice) {
-            case ROCK:
-                result = computersChoice.equals(SCISSORS) ?  1 : -1;
-                break;
-            case PAPER:
-                result = computersChoice.equals(ROCK) ? 1 : -1;
-                break;
-            case SCISSORS:
-                result = computersChoice.equals(PAPER) ? 1: -1;
-                break;
+                                          String computersChoice) {
+        int result = Integer.MIN_VALUE;
+        if(isValidChoice(playersChoice) && isValidChoice(computersChoice)) {
+            if(playersChoice.equals(computersChoice)) {
+                result = 0;
+            }
+            switch (playersChoice) {
+                case ROCK:
+                    result = computersChoice.equals(SCISSORS) ?  1 : -1;
+                    break;
+                case PAPER:
+                    result = computersChoice.equals(ROCK) ? 1 : -1;
+                    break;
+                case SCISSORS:
+                    result = computersChoice.equals(PAPER) ? 1: -1;
+                    break;
+            }
         }
         return result;
     }
