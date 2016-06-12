@@ -19,7 +19,6 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
-    @Autowired
     private GameStrategy gameStrategy;
 
     @RequestMapping(value = "/rps", produces = "application/json")
