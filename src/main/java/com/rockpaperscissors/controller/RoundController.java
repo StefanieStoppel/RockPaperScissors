@@ -1,9 +1,11 @@
 package com.rockpaperscissors.controller;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.rockpaperscissors.model.Move;
+import com.rockpaperscissors.model.Round;
 import com.rockpaperscissors.strategy.GameStrategy;
 import com.rockpaperscissors.strategy.RockPaperScissorsStrategy;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,11 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/")
-public class MoveController {
+public class RoundController {
 
-    private static final String resultTemplate = "You played: %s \n The computer played: %s \n";
-    private static final String winnerTemplate = "%s wins round %2d.";
-    private static final String drawTemplate = "Round %2d is a draw.";
     private static final String PLAYER = "Player";
     private static final String COMPUTER = "Computer";
 
@@ -28,25 +27,29 @@ public class MoveController {
     private GameStrategy gameStrategy = new RockPaperScissorsStrategy();
 
     @RequestMapping(value = "/rps", produces = "application/json")
-    public Move rockPaperScissors(@RequestParam(value="object") String playersChoice) {
+    public Round rockPaperScissors(@RequestParam(value="object") String playersChoice) {
         // todo: choice of game strategy
 
         //todo: implement game exit on keypress other than r,p or s
 
         String computersChoice = getComputersChoice();
 
-        String output = String.format(resultTemplate, playersChoice, computersChoice);
-        long round = counter.incrementAndGet();
+        // Map moves contains: "Player":"playersChoice", "Computer":"computersChoice"
+        Map<String, String> moves = new LinkedHashMap<>();
+        moves.put(PLAYER, playersChoice);
+        moves.put(COMPUTER, computersChoice);
+
+        int winnerId = -1;
+
+        long roundCount = counter.incrementAndGet();
 
         int result = gameStrategy.determineWinner(playersChoice, computersChoice);
         if(result == 1) {
-            output += String.format(winnerTemplate, PLAYER, round);
+            winnerId = 0;
         } else if(result == -1) {
-            output += String.format(winnerTemplate, COMPUTER, round);
-        } else {
-            output += String.format(drawTemplate, round);
+            winnerId = 1;
         }
-        return new Move(round, output);
+        return new Round(roundCount, moves, winnerId);
     }
 
     private String getComputersChoice(){
