@@ -27,6 +27,6 @@ public class GameController {
         String computersChoice = gameService.getRandomChoice();
 
         // Return an object of type Round to be displayed as JSON
-        return gameService.play(playersChoice, computersChoice);
+        return gameService.playRound(playersChoice, computersChoice);
     }
 }
