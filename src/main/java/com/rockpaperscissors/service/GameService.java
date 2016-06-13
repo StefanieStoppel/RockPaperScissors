@@ -1,6 +1,7 @@
 package com.rockpaperscissors.service;
 
 
+import com.rockpaperscissors.config.GameConfiguration;
 import com.rockpaperscissors.model.Round;
 import com.rockpaperscissors.strategy.GameStrategy;
 import com.rockpaperscissors.strategy.RockPaperScissorsStrategy;
@@ -22,12 +23,7 @@ public class GameService {
     private static final String drawTemplate = "Round %2d is a draw.";
     private static final String errorTemplate = "Round %2d was invalid. Reason: %s";
 
-    private static final String[] rockPaperScissors = {"rock", "paper", "scissors"};
-    private static final String[] rockPaperScissorsWell = {"rock", "paper", "scissors", "well"};
     private String[] choices;
-
-    private static final String PLAYER = "Player";
-    private static final String COMPUTER = "Computer";
 
     private final AtomicLong roundCounter = new AtomicLong();
     private GameStrategy gameStrategy;
@@ -54,9 +50,9 @@ public class GameService {
     private void setChoices() {
         if(gameStrategy != null) {
             if(gameStrategy instanceof RockPaperScissorsStrategy) {
-                this.choices = rockPaperScissors;
+                this.choices = GameConfiguration.ROCK_PAPER_SCISSORS;
             } else {
-                this.choices = rockPaperScissorsWell;
+                this.choices = GameConfiguration.ROCK_PAPER_SCISSORS_WELL;
             }
         } else {
             throw new NullPointerException();
@@ -74,8 +70,8 @@ public class GameService {
 
         // Map contains: "Player" -> playersChoice, "Computer" -> computersChoice
         Map<String, String> moves = new LinkedHashMap<>();
-        moves.put(PLAYER, playersChoice);
-        moves.put(COMPUTER, computersChoice);
+        moves.put(GameConfiguration.PLAYER, playersChoice);
+        moves.put(GameConfiguration.COMPUTER, computersChoice);
 
         roundCount = roundCounter.incrementAndGet();
 
@@ -116,9 +112,9 @@ public class GameService {
         String winner = null;
         int result = gameStrategy.determineWinner(playersChoice, computersChoice);
         if(result == 1) {
-            winner = PLAYER;
+            winner = GameConfiguration.PLAYER;
         } else if(result == -1) {
-            winner = COMPUTER;
+            winner = GameConfiguration.COMPUTER;
         } else if(result == 0) {
             winner = "";        //draw
         }
