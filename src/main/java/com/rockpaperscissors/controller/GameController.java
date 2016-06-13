@@ -1,9 +1,8 @@
 package com.rockpaperscissors.controller;
 
+import com.rockpaperscissors.config.GameConfiguration;
 import com.rockpaperscissors.model.Round;
 import com.rockpaperscissors.service.GameService;
-import com.rockpaperscissors.strategy.GameStrategy;
-import com.rockpaperscissors.strategy.RockPaperScissorsStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,19 +18,17 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
-    private GameStrategy gameStrategy;
+    //private GameStrategy gameStrategy;
 
     @RequestMapping(value = "/rps", produces = "application/json")
     public Round rockPaperScissors(@RequestParam(value="object") String playersChoice) {
 
-        gameStrategy = new RockPaperScissorsStrategy();
-        // Set the strategy depending on game mode. The strategy determines the choices of game moves.
-        gameService.setGameStrategy(gameStrategy);
+        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
 
         String computersChoice = gameService.getRandomChoice();
 
-        gameService.play(playersChoice, computersChoice);
+        return gameService.play(playersChoice, computersChoice);
 
-        return gameService.getRound();
+        //return gameService.getRound();
     }
 }

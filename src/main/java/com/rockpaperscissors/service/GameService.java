@@ -18,6 +18,7 @@ public class GameService {
 
     private static final Logger logger = Logger.getLogger(GameService.class);
 
+    // todo: Put these in a separate class
     private static final String resultTemplate = "You played: %s \n The computer played: %s \n";
     private static final String winnerTemplate = "%s wins round %2d.";
     private static final String drawTemplate = "Round %2d is a draw.";
@@ -28,34 +29,30 @@ public class GameService {
     private final AtomicLong roundCounter = new AtomicLong();
     private GameStrategy gameStrategy;
 
-    // Result of this game round
+    // Result of this game round, will be returned to GameController
     private Round round;
 
     private String playersChoice;
     private String computersChoice;
     private long roundCount;
+    private int gameMode;
+    private String winner;
 
     public GameService() {
     }
 
+/*
     public GameService(GameStrategy gameStrategy) {
-        setGameStrategy(gameStrategy);
+        setGameModeAndStrategy(gameStrategy);
     }
+*/
 
-    public void setGameStrategy(GameStrategy gameStrategy) throws IllegalArgumentException {
-        this.gameStrategy = gameStrategy;
-        setChoices();
-    }
-
-    private void setChoices() {
-        if(gameStrategy != null) {
-            if(gameStrategy instanceof RockPaperScissorsStrategy) {
-                this.choices = GameConfiguration.ROCK_PAPER_SCISSORS;
-            } else {
-                this.choices = GameConfiguration.ROCK_PAPER_SCISSORS_WELL;
-            }
-        } else {
-            throw new NullPointerException();
+    public void setGameModeAndStrategy(int gameMode) throws IllegalArgumentException {
+        this.gameMode = gameMode;
+        if(gameMode == GameConfiguration.GAME_MODE_RPS) {
+            this.gameStrategy = new RockPaperScissorsStrategy();
+        } else if(gameMode == GameConfiguration.GAME_MODE_RPSW) {
+//            this.gameStrategy = new RockPaperScissorsWellStrategy(); todo: implement
         }
     }
 
@@ -63,7 +60,7 @@ public class GameService {
         return round;
     }
 
-    public void play(String playersChoice, String computersChoice) {
+    public Round play(String playersChoice, String computersChoice) {
         // Set playersChoice
         this.playersChoice = playersChoice;
         this.computersChoice = computersChoice;
@@ -75,13 +72,14 @@ public class GameService {
 
         roundCount = roundCounter.incrementAndGet();
 
-        String winner = getWinner(playersChoice, computersChoice);
+        winner = getWinner(playersChoice, computersChoice);
         String output = createOutput(roundCount, playersChoice, computersChoice);
 
         round = new Round(roundCount,
                             moves,
                             winner,
                             output);
+        return round;
     }
 
     private String createOutput(long roundCount, String playersChoice, String computersChoice) {
@@ -94,7 +92,6 @@ public class GameService {
             // Append info about who played what
             output += String.format(resultTemplate, playersChoice, computersChoice);
 
-            String winner = getWinner(playersChoice, computersChoice);
             if(winner != null) {
                 if(winner.length() > 0) {
                     output += String.format(winnerTemplate, winner, roundCount);
@@ -107,6 +104,8 @@ public class GameService {
         }
         return output;
     }
+
+    //todo: separate determineWinner and getWinner -> getWinner should be pure getter
 
     public String getWinner(String playersChoice, String computersChoice) {
         String winner = null;
@@ -123,11 +122,8 @@ public class GameService {
 
 
     public String getRandomChoice() {
-        if(choices != null) {
-            return choices[ThreadLocalRandom.current().nextInt(0, choices.length)];
-        } else {
-            return "";
-        }
+        return GameConfiguration.ROCK_PAPER_SCISSORS[ThreadLocalRandom.current().nextInt(0,
+                                                     GameConfiguration.ROCK_PAPER_SCISSORS.length)];
     }
 
     public String getPlayersChoice() {

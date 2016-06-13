@@ -1,6 +1,7 @@
 package model;
 
 import com.rockpaperscissors.RockPaperScissorsApplication;
+import com.rockpaperscissors.config.GameConfiguration;
 import com.rockpaperscissors.model.Round;
 import com.rockpaperscissors.service.GameService;
 import com.rockpaperscissors.strategy.GameStrategy;
@@ -13,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,7 +26,6 @@ public class RoundTests {
     private static final String[] invalidChoices = {"jfshf", "üfj(", "$(§$KE", "", "-4", "..", "papr", "0034358325"};
 
     private Round round;
-    private GameStrategy gameStrategy = new RockPaperScissorsStrategy();
 
     private String playersChoice;
     private String computersChoice;
@@ -35,7 +33,7 @@ public class RoundTests {
     @Before
     public void setUp() throws Exception {
         // Random round
-        gameService.setGameStrategy(gameStrategy);
+        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
     }
 
     public void setUpValidChoices() {
