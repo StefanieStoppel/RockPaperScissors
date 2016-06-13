@@ -122,8 +122,15 @@ public class GameService {
 
 
     public String getRandomChoice() {
-        return GameConfiguration.ROCK_PAPER_SCISSORS[ThreadLocalRandom.current().nextInt(0,
-                                                     GameConfiguration.ROCK_PAPER_SCISSORS.length)];
+        String randomChoice = "";
+        if(gameMode == GameConfiguration.GAME_MODE_RPS) {
+            randomChoice = GameConfiguration.ROCK_PAPER_SCISSORS[ThreadLocalRandom.current().nextInt(0,
+                    GameConfiguration.ROCK_PAPER_SCISSORS.length)];
+        } else if(gameMode == GameConfiguration.GAME_MODE_RPSW) {
+            randomChoice = GameConfiguration.ROCK_PAPER_SCISSORS_WELL[ThreadLocalRandom.current().nextInt(0,
+                    GameConfiguration.ROCK_PAPER_SCISSORS_WELL.length)];
+        }
+        return randomChoice;
     }
 
     public String getPlayersChoice() {
