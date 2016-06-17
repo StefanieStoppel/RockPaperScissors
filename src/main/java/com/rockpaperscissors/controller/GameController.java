@@ -18,10 +18,23 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
+
     @RequestMapping(value = "/rps", produces = "application/json")
     public Round rockPaperScissors(@RequestParam(value="object") String playersChoice) {
 
         gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
+
+        // Can potentially be empty
+        String computersChoice = gameService.getRandomChoice();
+
+        // Return an object of type Round to be displayed as JSON
+        return gameService.playRound(playersChoice, computersChoice);
+    }
+
+    @RequestMapping(value = "/rpsw", produces = "application/json")
+    public Round rockPaperScissorsWell(@RequestParam(value="object") String playersChoice) {
+
+        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPSW);
 
         // Can potentially be empty
         String computersChoice = gameService.getRandomChoice();
