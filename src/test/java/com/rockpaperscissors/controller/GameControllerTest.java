@@ -20,6 +20,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Arrays;
+
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.anyOf;
 import static org.junit.Assert.assertThat;
@@ -45,9 +47,6 @@ public class GameControllerTest {
     @Autowired
     private GameService gameService;
 
-    @Autowired
-    private HandFactory handFactory;
-
     @Before
     public void setUp()
     {
@@ -55,45 +54,74 @@ public class GameControllerTest {
     }
 
     @Test
-    public void playRockPaperScissors_validInput() throws Exception {
-        // Set game mode to 0 = "Rock Paper Scissors"
+    public void playRockPaperScissors_validHand() throws Exception {
         gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
-        String randomChoice = handFactory.getRandomValidChoice(GameConfiguration.GAME_MODE_RPS);
-        logger.debug("RandomChoice: "+ randomChoice);
+        String randomValidHand = HandFactory.getRandomValidHand(GameConfiguration.GAME_MODE_RPS);
+        logger.debug("RandomChoice: "+ randomValidHand);
 
-        MvcResult result = mockMvc.perform(get("/play/0?hand=" + randomChoice))
-                                .andExpect(status().isOk())
-                                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                                .andReturn();
-
-        // getRoundCount() call after playing a round. The roundCount is now 1.
-        long roundCount = gameService.getRoundCount();
-        MockHttpServletResponse response = result.getResponse();
-        String responseJSON = response.getContentAsString();
-        assertThat(responseJSON, anyOf(containsString(String.format(OutputTemplate.WINNER, GameConfiguration.PLAYER, roundCount)),
-                                       containsString(String.format(OutputTemplate.WINNER, GameConfiguration.COMPUTER, roundCount)),
-                                       containsString(String.format(OutputTemplate.DRAW, roundCount))));
-        assertThat(responseJSON, containsString("You played: " + randomChoice));
+        checkValidHand(randomValidHand);
     }
 
     @Test
-    public void playRockPaperScissors_invalidInput() throws Exception {
+    public void playRockPaperScissors_invalidHand() throws Exception {
         gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
-        String invalidChoice = HandFactory.getRandomInvalidChoice();
-        logger.debug("InvalidChoice: " + invalidChoice);
+        String randomInvalidChoice = HandFactory.getRandomInvalidHand();
+        logger.debug("InvalidChoice: " + randomInvalidChoice);
 
-        MvcResult result = mockMvc.perform(get("/play/0?hand=" + invalidChoice))
+        checkInvalidHand(randomInvalidChoice);
+    }
+
+    @Test
+    public void playRockPaperScissorsWell_validHand()  {
+        // Set game mode to 0 = "Rock Paper Scissors"
+        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPSW);
+        String randomValidHand = HandFactory.getRandomValidHand(GameConfiguration.GAME_MODE_RPSW);
+        logger.debug("ValidChoice: "+ randomValidHand);
+
+        checkValidHand(randomValidHand);
+    }
+
+    @Test
+    public void playRockPaperScissorsWell_invalidHand()  {
+        // Set game mode to 0 = "Rock Paper Scissors"
+        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPSW);
+        String randomInvalidHand = HandFactory.getRandomInvalidHand();
+        logger.debug("InvalidChoice: "+ randomInvalidHand);
+
+        checkInvalidHand(randomInvalidHand);
+    }
+
+    private void checkValidHand(String playersHand) {
+        try {
+            String responseJSON = getJsonResponse(playersHand);
+
+            // getRoundCount() call after playing a round. The roundCount is now 1.
+            long roundCount = gameService.getRoundCount();
+
+            assertThat(responseJSON, anyOf(containsString(String.format(OutputTemplate.WINNER, GameConfiguration.PLAYER, roundCount)),
+                    containsString(String.format(OutputTemplate.WINNER, GameConfiguration.COMPUTER, roundCount)),
+                    containsString(String.format(OutputTemplate.DRAW, roundCount))));
+            assertThat(responseJSON, containsString("You played: " + playersHand));
+        } catch (Exception e) {
+            logger.error("getJsonResponse(" + playersHand + ") call returned an error: " + Arrays.toString(e.getStackTrace()));
+        }
+    }
+
+    private void checkInvalidHand(String playersHand) {
+        try {
+            String responseJSON = getJsonResponse(playersHand);
+            assertThat(responseJSON, containsString(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER));
+        } catch (Exception e) {
+            logger.error("getJsonResponse(" + playersHand + ") call returned an error: " + Arrays.toString(e.getStackTrace()));
+        }
+    }
+
+    private String getJsonResponse(String playersHand) throws Exception {
+        MvcResult result = mockMvc.perform(get("/play/0?hand=" + playersHand))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andReturn();
         MockHttpServletResponse response = result.getResponse();
-        String responseJSON = response.getContentAsString();
-        assertThat(responseJSON, containsString(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER));
+        return response.getContentAsString();
     }
-
-    @Test
-    public void rockPaperScissorsWell() throws Exception {
-
-    }
-
 }
