@@ -1,8 +1,11 @@
 package com.rockpaperscissors.config;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 
-public final class GameConfiguration {
+@Component
+public class GameConfiguration {
 
     public static final String ROCK = "rock";
     public static final String PAPER = "paper";
@@ -33,8 +36,16 @@ public final class GameConfiguration {
         return Arrays.asList(haystack).contains(hand);
     }
 
+    public static boolean isValidGameModeId(int gameModeId) {
+        return gameModeId == GameConfiguration.GAME_MODE_RPS || gameModeId == GameConfiguration.GAME_MODE_RPSW;
+    }
+
     public void setGameMode(int gameMode) {
         //todo: check for validity
-        GAME_MODE = gameMode;
+        if(isValidGameModeId(gameMode)) {
+            GAME_MODE = gameMode;
+        } else {
+            throw new IllegalArgumentException("Couldn't set game mode in configuration. Reason: Unknown game mode id: " + gameMode);
+        }
     }
 }
