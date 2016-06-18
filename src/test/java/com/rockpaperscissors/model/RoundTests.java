@@ -2,6 +2,7 @@ package com.rockpaperscissors.model;
 
 import com.rockpaperscissors.RockPaperScissorsApplication;
 import com.rockpaperscissors.config.GameConfiguration;
+import com.rockpaperscissors.helper.HandFactory;
 import com.rockpaperscissors.service.GameService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,7 +14,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -23,7 +23,8 @@ public class RoundTests {
     @Autowired
     GameService gameService;
 
-    private static final String[] invalidChoices = {"jfshf", "üfj(", "$(§$KE", "", "-4", "..", "papr", "0034358325"};
+    @Autowired
+    HandFactory handFactory;
 
     private long roundCount;
 
@@ -79,16 +80,12 @@ public class RoundTests {
         Assert.assertEquals(r.getWinner(), round.getWinner());
     }
 
-    public String getRandomInvalidChoice() {
-        return invalidChoices[ThreadLocalRandom.current().nextInt(0, invalidChoices.length)];
-    }
-
     @Test
     public void testInvalidChoices() {
         roundCount = roundCounter.longValue();
 
         // 1) Player's choice valid, computer's choice invalid
-        String invalidChoice = getRandomInvalidChoice();
+        String invalidChoice = handFactory.getRandomInvalidChoice();
         setUpMoves(GameConfiguration.ROCK, invalidChoice);
         Round round = gameService.playRound(GameConfiguration.ROCK, invalidChoice);
 
@@ -97,7 +94,7 @@ public class RoundTests {
         Assert.assertEquals(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER, round.getWinner());
 
         // 2) Player's choice invalid, computer's choice valid
-        invalidChoice = getRandomInvalidChoice();
+        invalidChoice = handFactory.getRandomInvalidChoice();
         setUpMoves(invalidChoice, GameConfiguration.SCISSORS);
         round = gameService.playRound(invalidChoice, GameConfiguration.SCISSORS);
 
@@ -106,8 +103,8 @@ public class RoundTests {
         Assert.assertEquals(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER, round.getWinner());
 
         // 3) Player's choice invalid, computer's choice invalid
-        invalidChoice = getRandomInvalidChoice();
-        String invalidChoice2 = getRandomInvalidChoice();
+        invalidChoice = handFactory.getRandomInvalidChoice();
+        String invalidChoice2 = handFactory.getRandomInvalidChoice();
         setUpMoves(invalidChoice, invalidChoice2);
         round = gameService.playRound(invalidChoice, invalidChoice2);
 

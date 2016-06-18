@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -37,7 +36,6 @@ public class GameService {
     }
 
     public Round playRound(String playersChoice, String computersChoice) {
-
         // Map contains: "Player" -> playersChoice, "Computer" -> computersChoice
         Map<String, String> moves = new LinkedHashMap<>();
         moves.put(GameConfiguration.PLAYER, playersChoice);
@@ -52,18 +50,6 @@ public class GameService {
 
     private void incrementRoundCounter() {
         roundCount = roundCounter.incrementAndGet();
-    }
-
-    public String getRandomChoice() {
-        String randomChoice = "";
-        if(gameMode == GameConfiguration.GAME_MODE_RPS) {
-            randomChoice = GameConfiguration.ROCK_PAPER_SCISSORS[ThreadLocalRandom.current().nextInt(0,
-                    GameConfiguration.ROCK_PAPER_SCISSORS.length)];
-        } else if(gameMode == GameConfiguration.GAME_MODE_RPSW) {
-            randomChoice = GameConfiguration.ROCK_PAPER_SCISSORS_WELL[ThreadLocalRandom.current().nextInt(0,
-                    GameConfiguration.ROCK_PAPER_SCISSORS_WELL.length)];
-        }
-        return randomChoice;
     }
 
     public long getRoundCount() {
