@@ -1,6 +1,7 @@
 package com.rockpaperscissors.controller;
 
 import com.rockpaperscissors.config.GameConfiguration;
+import com.rockpaperscissors.model.OutputTemplate;
 import com.rockpaperscissors.model.Round;
 import com.rockpaperscissors.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class GameController {
             gameConfiguration.setGameMode(gameModeId);
             gameService.setGameModeAndStrategy(gameModeId);
         } else {
-            round = new Round(-1, Collections.emptyMap(), "Invalid game mode.");
+            return new Round(-1, Collections.emptyMap(), OutputTemplate.ERROR_INVALID_GAME_MODE);
         }
 
         if(GameConfiguration.isValidHand(playersChoice)) {
@@ -40,10 +41,10 @@ public class GameController {
                 // Return an object of type Round to be displayed as JSON
                 round = gameService.playRound(playersChoice, computersChoice);
             } else {
-                round = new Round(-1, Collections.emptyMap(), "Computer's choice of hand was invalid.");
+                round = new Round(-1, Collections.emptyMap(), OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
             }
         } else {
-            round = new Round(-1, Collections.emptyMap(), "Player's choice of hand was invalid.");
+            round = new Round(-1, Collections.emptyMap(), OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
         }
         return round;
     }
