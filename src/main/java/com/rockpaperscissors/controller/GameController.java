@@ -6,18 +6,18 @@ import com.rockpaperscissors.model.OutputTemplate;
 import com.rockpaperscissors.model.Round;
 import com.rockpaperscissors.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
 
 //TODO: how to send json data with angularjs https://hello-angularjs.appspot.com/angularjs-http-service-ajax-post-json-data-code-example
 //Todo: send request
 
-@RestController
-@RequestMapping(value = "/play")
+@Controller
 public class GameController {
 
     @Autowired
@@ -26,7 +26,12 @@ public class GameController {
     @Autowired
     private GameConfiguration gameConfiguration;
 
-    @RequestMapping(value = "/{gameModeId}", produces = "application/json")
+    @RequestMapping(value = "/")
+    public String index(ModelMap map){
+        return "index";
+    }
+
+    @RequestMapping(value = "/play/{gameModeId}", produces = "application/json")
     public Round rockPaperScissors(@PathVariable int gameModeId, @RequestParam(value="hand", required = false) String playersHand) {
         Round round;
         if(GameConfiguration.isValidGameModeId(gameModeId)) {
