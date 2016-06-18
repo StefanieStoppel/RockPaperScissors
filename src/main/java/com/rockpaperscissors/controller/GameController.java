@@ -26,9 +26,6 @@ public class GameController {
     @Autowired
     private GameConfiguration gameConfiguration;
 
-    @Autowired
-    private HandFactory handFactory;
-
     @RequestMapping(value = "/{gameModeId}", produces = "application/json")
     public Round rockPaperScissors(@PathVariable int gameModeId, @RequestParam(value="hand", required = false) String playersHand) {
         Round round;
@@ -41,7 +38,7 @@ public class GameController {
 
         if(GameConfiguration.isValidHand(playersHand)) {
             // Can potentially be empty
-            String computersChoice = handFactory.getRandomValidChoice(gameModeId);
+            String computersChoice = HandFactory.getRandomValidHand(gameModeId);
             if(GameConfiguration.isValidHand(computersChoice)) {
                 // Return an object of type Round to be displayed as JSON
                 round = gameService.playRound(playersHand, computersChoice);

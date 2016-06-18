@@ -23,9 +23,6 @@ public class RoundTests {
     @Autowired
     GameService gameService;
 
-    @Autowired
-    HandFactory handFactory;
-
     private long roundCount;
 
     private final AtomicLong roundCounter = new AtomicLong();
@@ -85,7 +82,7 @@ public class RoundTests {
         roundCount = roundCounter.longValue();
 
         // 1) Player's choice valid, computer's choice invalid
-        String invalidChoice = handFactory.getRandomInvalidChoice();
+        String invalidChoice = HandFactory.getRandomInvalidHand();
         setUpMoves(GameConfiguration.ROCK, invalidChoice);
         Round round = gameService.playRound(GameConfiguration.ROCK, invalidChoice);
 
@@ -94,7 +91,7 @@ public class RoundTests {
         Assert.assertEquals(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER, round.getWinner());
 
         // 2) Player's choice invalid, computer's choice valid
-        invalidChoice = handFactory.getRandomInvalidChoice();
+        invalidChoice = HandFactory.getRandomInvalidHand();
         setUpMoves(invalidChoice, GameConfiguration.SCISSORS);
         round = gameService.playRound(invalidChoice, GameConfiguration.SCISSORS);
 
@@ -103,8 +100,8 @@ public class RoundTests {
         Assert.assertEquals(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER, round.getWinner());
 
         // 3) Player's choice invalid, computer's choice invalid
-        invalidChoice = handFactory.getRandomInvalidChoice();
-        String invalidChoice2 = handFactory.getRandomInvalidChoice();
+        invalidChoice = HandFactory.getRandomInvalidHand();
+        String invalidChoice2 = HandFactory.getRandomInvalidHand();
         setUpMoves(invalidChoice, invalidChoice2);
         round = gameService.playRound(invalidChoice, invalidChoice2);
 
