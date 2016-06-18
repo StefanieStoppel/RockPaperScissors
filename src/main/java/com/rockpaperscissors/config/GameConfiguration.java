@@ -1,7 +1,10 @@
 package com.rockpaperscissors.config;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 
+@Component
 public class GameConfiguration {
 
     public static final String ROCK = "rock";
