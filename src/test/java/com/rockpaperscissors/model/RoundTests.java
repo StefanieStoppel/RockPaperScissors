@@ -1,9 +1,7 @@
-package model;
+package com.rockpaperscissors.model;
 
 import com.rockpaperscissors.RockPaperScissorsApplication;
 import com.rockpaperscissors.config.GameConfiguration;
-import com.rockpaperscissors.model.OutputTemplate;
-import com.rockpaperscissors.model.Round;
 import com.rockpaperscissors.service.GameService;
 import org.junit.Assert;
 import org.junit.Before;
