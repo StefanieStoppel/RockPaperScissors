@@ -4,6 +4,7 @@ import com.rockpaperscissors.RockPaperScissorsApplication;
 import com.rockpaperscissors.config.GameConfiguration;
 import com.rockpaperscissors.helper.HandFactory;
 import com.rockpaperscissors.service.GameService;
+import org.apache.logging.log4j.util.Strings;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,7 @@ public class RoundTests {
     @Before
     public void setUp() throws Exception {
         // Play game mode rock, paper, scissors
-        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
+        gameService.setStrategyByGameMode(GameConfiguration.GAME_MODE_RPS);
     }
 
     public void setUpMoves(String playersChoice, String computersChoice) {
@@ -50,7 +51,7 @@ public class RoundTests {
         Assert.assertNotNull(resultRound);
 
         Assert.assertEquals(r.getMoves(), resultRound.getMoves());
-        Assert.assertEquals(r.getWinner(), resultRound.getWinner());
+        Assert.assertEquals(Strings.EMPTY, resultRound.getWinner());
     }
 
     @Test
@@ -88,7 +89,7 @@ public class RoundTests {
 
         Assert.assertNotNull(round);
         Assert.assertEquals(moves, round.getMoves());
-        Assert.assertEquals(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER, round.getWinner());
+        Assert.assertEquals(Strings.EMPTY, round.getWinner());
 
         // 2) Player's choice invalid, computer's choice valid
         invalidChoice = HandFactory.getRandomInvalidHand();
@@ -97,7 +98,7 @@ public class RoundTests {
 
         Assert.assertNotNull(round);
         Assert.assertEquals(moves, round.getMoves());
-        Assert.assertEquals(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER, round.getWinner());
+        Assert.assertEquals(Strings.EMPTY, round.getWinner());
 
         // 3) Player's choice invalid, computer's choice invalid
         invalidChoice = HandFactory.getRandomInvalidHand();
@@ -107,6 +108,6 @@ public class RoundTests {
 
         Assert.assertNotNull(round);
         Assert.assertEquals(moves, round.getMoves());
-        Assert.assertEquals(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER, round.getWinner());
+        Assert.assertEquals(Strings.EMPTY, round.getWinner());
     }
 }

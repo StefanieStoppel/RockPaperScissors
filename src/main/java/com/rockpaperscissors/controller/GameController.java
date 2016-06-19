@@ -27,9 +27,10 @@ public class GameController {
         Round round;
         if(GameConfiguration.isValidGameModeId(gameModeId)) {
             gameConfiguration.setGameMode(gameModeId);
-            gameService.setGameModeAndStrategy(gameModeId);
+            gameService.setStrategyByGameMode(gameModeId);
         } else {
-            return new Round(-1, Collections.emptyMap(), OutputTemplate.ERROR_INVALID_GAME_MODE);
+            round = new Round(-1, Collections.emptyMap());
+            round.setMessage(OutputTemplate.ERROR_INVALID_GAME_MODE);
         }
 
         if(GameConfiguration.isValidHand(playersHand)) {
@@ -39,10 +40,12 @@ public class GameController {
                 // Return an object of type Round to be displayed as JSON
                 round = gameService.playRound(playersHand, computersHand);
             } else {
-                round = new Round(-1, Collections.emptyMap(), OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
+                round = new Round(-1, Collections.emptyMap());
+                round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
             }
         } else {
-            round = new Round(-1, Collections.emptyMap(), OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
+            round = new Round(-1, Collections.emptyMap());
+            round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
         }
         return round;
     }

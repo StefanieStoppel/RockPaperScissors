@@ -6,6 +6,7 @@ package com.rockpaperscissors.strategy;
 
 import com.rockpaperscissors.config.GameConfiguration;
 import com.rockpaperscissors.model.OutputTemplate;
+import com.rockpaperscissors.model.Round;
 import org.apache.log4j.Logger;
 
 public class RockPaperScissorsWellStrategy implements GameStrategy {
@@ -21,39 +22,35 @@ public class RockPaperScissorsWellStrategy implements GameStrategy {
     }
 
     @Override
-    public String determineWinner(String playersChoice,
-                                  String computersChoice) {
-
+    public String determineWinner(Round round, String playersChoice,
+                                  final String computersChoice) {
+        String winner = "";
         if(!isValidChoice(playersChoice)){
             logger.debug(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
-            return OutputTemplate.ERROR_INVALID_CHOICE_PLAYER;
+            round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
         } else if(!isValidChoice(computersChoice)) {
             logger.debug(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
-            return OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER;
-        } else {
-            String result = "";
-            if(playersChoice.equals(computersChoice)) {
-                return result;
-            }
+            round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
+        } else if(!playersChoice.equals(computersChoice)){
             switch (playersChoice) {
                 case GameConfiguration.ROCK:
-                    result = computersChoice.equals(GameConfiguration.SCISSORS) ? GameConfiguration.PLAYER : GameConfiguration.COMPUTER;
+                    winner = computersChoice.equals(GameConfiguration.SCISSORS) ? GameConfiguration.PLAYER : GameConfiguration.COMPUTER;
                     break;
                 case GameConfiguration.PAPER:
-                    result = (computersChoice.equals(GameConfiguration.ROCK) || computersChoice.equals(GameConfiguration.WELL))
+                    winner = (computersChoice.equals(GameConfiguration.ROCK) || computersChoice.equals(GameConfiguration.WELL))
                                 ? GameConfiguration.PLAYER : GameConfiguration.COMPUTER;
                     break;
                 case GameConfiguration.SCISSORS:
-                    result = computersChoice.equals(GameConfiguration.PAPER) ? GameConfiguration.PLAYER : GameConfiguration.COMPUTER;
+                    winner = computersChoice.equals(GameConfiguration.PAPER) ? GameConfiguration.PLAYER : GameConfiguration.COMPUTER;
                     break;
                 case GameConfiguration.WELL:
-                    result = computersChoice.equals(GameConfiguration.PAPER) ? GameConfiguration.COMPUTER : GameConfiguration.PLAYER;
+                    winner = computersChoice.equals(GameConfiguration.PAPER) ? GameConfiguration.COMPUTER : GameConfiguration.PLAYER;
                     break;
             }
             logger.debug("playersChoice: " + playersChoice + ", computersChoice: "
-                    + computersChoice + ", result:" + result);
-            return result;
+                    + computersChoice + ", result:" + winner);
         }
+        return winner;
     }
 }
 
