@@ -3,28 +3,58 @@
 <head>
     <title>A "Rock Paper Scissors" implementation with Spring Boot</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Latest compiled and minified Bootstrap CSS from CDN -->
-<!--
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
--->
+
     <!-- AngularJS resources -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
 </head>
 
 <body>
-<div ng-controller="GameController as controller" ng-cloak>
-    <h1>Play "Rock, Paper, Scissors"</h1>
-    <p ng-if="controller.round.moves['Player']!==undefined">You played: {{controller.round.moves['Player']}}</p>
-    <p ng-if="controller.round.moves['Computer']!==undefined">The computer played: {{controller.round.moves['Computer']}}</p>
-    <p ng-if="controller.round.winner!==null && controller.round.winner.length>0 && controller.round.message==''">{{controller.round.winner}} wins round {{controller.round.count}}</p>
-    <p ng-if="controller.round.winner==='' && controller.round.message==''">Round {{controller.round.count}} is a draw</p>
-    <p ng-if="controller.round.message!==''">There was an error: {{controller.round.message}}</p>
-    <a href="" ng-click="controller.play('rock', 0)" style="width: 100px; height: 100px; background-color: dodgerblue">Rock</a>
-    <a href="" ng-click="controller.play('paper', 0)" style="width: 100px; height: 100px; background-color: dodgerblue">Paper</a>
-    <a href="" ng-click="controller.play('scissors', 0)" style="width: 100px; height: 100px; background-color: dodgerblue">Scissors</a>
-</div>
+<header>
+    <div class="container-fluid">
+        <div class="page-header">
+            <h1>
+                "Rock, Paper, Scissors"
+                <small class="row">Built with Spring Boot, AngularJS and Bootstrap</small>
+            </h1>
+        </div>
+    </div>
+</header>
 
+<main>
+    <div ng-controller="GameController as controller" ng-cloak>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12 col-md-4 col-md-offset-4">
+                    <a class="btn btn-primary" href="" ng-click="controller.play('rock', 0)">Rock</a>
+                    <a class="btn btn-primary" href="" ng-click="controller.play('paper', 0)">Paper</a>
+                    <a class="btn btn-primary" href="" ng-click="controller.play('scissors', 0)">Scissors</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">
+                    <h3 ng-if="controller.round.moves['Player']!==undefined">You played: {{controller.round.moves['Player']}}</h3>
+                </div>
+                <div class="col-xs-12 col-md-6">
+                    <h3 ng-if="controller.round.moves['Computer']!==undefined">The computer played: {{controller.round.moves['Computer']}}</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-4 col-md-offset-4">
+                    <h2 ng-if="controller.round.winner!==null && controller.round.winner.length>0 && controller.round.message==''">{{controller.round.winner}} wins round {{controller.round.count}}</h2>
+                    <h2 ng-if="controller.round.winner==='' && controller.round.message==''">Round {{controller.round.count}} is a draw</h2>
+                    <h2 style="color: red" ng-if="controller.round.message!==''"><strong>There was an error: {{controller.round.message}}</strong></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+
+</footer>
 
 <script src="js/app.js"></script>
 <script src="js/service/game-service.js"></script>
