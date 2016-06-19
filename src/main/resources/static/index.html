@@ -8,19 +8,23 @@
 <!--
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 -->
+    <!-- AngularJS resources -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
 </head>
 
 <body>
-<div ng-controller="GameController as controller">
-    <p>Round: {{controller.round.count}}</p>
-    <p>{{controller.round.output}}</p>
+<div ng-controller="GameController as controller" ng-cloak>
+    <h1>Play "Rock, Paper, Scissors"</h1>
+    <p ng-if="controller.round.moves['Player']!==undefined">You played: {{controller.round.moves['Player']}}</p>
+    <p ng-if="controller.round.moves['Computer']!==undefined">The computer played: {{controller.round.moves['Computer']}}</p>
+    <p ng-if="controller.round.winner!==''">{{controller.round.winner}} wins round {{controller.round.count}}</p>
+    <p ng-if="controller.round.winner===''">Round {{controller.round.count}} is a draw</p>
     <a href="" ng-click="controller.play('rock', 0)" style="width: 100px; height: 100px; background-color: dodgerblue">Rock</a>
     <a href="" ng-click="controller.play('paper', 0)" style="width: 100px; height: 100px; background-color: dodgerblue">Paper</a>
     <a href="" ng-click="controller.play('scissors', 0)" style="width: 100px; height: 100px; background-color: dodgerblue">Scissors</a>
 </div>
 
-<!-- AngularJS resources -->
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+
 <script src="js/app.js"></script>
 <script src="js/service/game-service.js"></script>
 <script src="js/controller/game-controller.js"></script>
