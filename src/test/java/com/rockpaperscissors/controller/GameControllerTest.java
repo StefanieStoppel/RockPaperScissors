@@ -11,23 +11,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
-
-import static org.hamcrest.CoreMatchers.containsString;
+import static java.lang.Math.toIntExact;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.anyOf;
-import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * @author Stefanie Stoppel
@@ -47,6 +42,9 @@ public class GameControllerTest {
     @Autowired
     private GameService gameService;
 
+    @Autowired
+    GameConfiguration gameConfiguration;
+
     @Before
     public void setUp()
     {
@@ -55,73 +53,64 @@ public class GameControllerTest {
 
     @Test
     public void playRockPaperScissors_validHand() throws Exception {
-        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
-        String randomValidHand = HandFactory.getRandomValidHand(GameConfiguration.GAME_MODE_RPS);
-        logger.debug("RandomChoice: "+ randomValidHand);
+        gameService.setStrategyByGameMode(GameConfiguration.GAME_MODE_RPS);
+        gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPS);
 
-        checkValidHand(randomValidHand);
+        checkValidHand();
     }
 
     @Test
     public void playRockPaperScissors_invalidHand() throws Exception {
-        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
-        String randomInvalidChoice = HandFactory.getRandomInvalidHand();
-        logger.debug("InvalidChoice: " + randomInvalidChoice);
+        gameService.setStrategyByGameMode(GameConfiguration.GAME_MODE_RPS);
+        gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPS);
 
-        checkInvalidHand(randomInvalidChoice);
+        checkInvalidHand();
     }
 
     @Test
-    public void playRockPaperScissorsWell_validHand()  {
-        // Set game mode to 0 = "Rock Paper Scissors"
-        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPSW);
-        String randomValidHand = HandFactory.getRandomValidHand(GameConfiguration.GAME_MODE_RPSW);
+    public void playRockPaperScissorsWell_validHand() throws Exception {
+        // Set game mode to 1 = "Rock Paper Scissors Well"
+        gameService.setStrategyByGameMode(GameConfiguration.GAME_MODE_RPSW);
+        gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPSW);
+
+        checkValidHand();
+    }
+
+    @Test
+    public void playRockPaperScissorsWell_invalidHand() throws Exception {
+        // Set game mode to 1 = "Rock Paper Scissors Well"
+        gameService.setStrategyByGameMode(GameConfiguration.GAME_MODE_RPSW);
+        gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPSW);
+
+        checkInvalidHand();
+    }
+
+    private void checkValidHand() throws Exception {
+        String randomValidHand = HandFactory.getRandomValidHand(GameConfiguration.GAME_MODE);
         logger.debug("ValidChoice: "+ randomValidHand);
 
-        checkValidHand(randomValidHand);
+        mockMvc.perform(get("/play/" + GameConfiguration.GAME_MODE + "?hand=" + randomValidHand))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.count").value(toIntExact(gameService.getRoundCount())))
+                .andExpect(jsonPath("$.moves").isNotEmpty())
+                .andExpect(jsonPath("$.winner").value(anyOf(is(""), is(GameConfiguration.COMPUTER), is(GameConfiguration.PLAYER))))
+                .andExpect(jsonPath("$.message").isEmpty());
     }
 
-    @Test
-    public void playRockPaperScissorsWell_invalidHand()  {
-        // Set game mode to 0 = "Rock Paper Scissors"
-        gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPSW);
+    private void checkInvalidHand() throws Exception {
         String randomInvalidHand = HandFactory.getRandomInvalidHand();
         logger.debug("InvalidChoice: "+ randomInvalidHand);
 
-        checkInvalidHand(randomInvalidHand);
-    }
-
-    private void checkValidHand(String playersHand) {
-        try {
-            String responseJSON = getJsonResponse(playersHand);
-
-            // getRoundCount() call after playing a round. The roundCount is now 1.
-            long roundCount = gameService.getRoundCount();
-
-            assertThat(responseJSON, anyOf(containsString(String.format(OutputTemplate.WINNER, GameConfiguration.PLAYER, roundCount)),
-                    containsString(String.format(OutputTemplate.WINNER, GameConfiguration.COMPUTER, roundCount)),
-                    containsString(String.format(OutputTemplate.DRAW, roundCount))));
-            assertThat(responseJSON, containsString("You played: " + playersHand));
-        } catch (Exception e) {
-            logger.error("getJsonResponse(" + playersHand + ") call returned an error: " + Arrays.toString(e.getStackTrace()));
-        }
-    }
-
-    private void checkInvalidHand(String playersHand) {
-        try {
-            String responseJSON = getJsonResponse(playersHand);
-            assertThat(responseJSON, containsString(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER));
-        } catch (Exception e) {
-            logger.error("getJsonResponse(" + playersHand + ") call returned an error: " + Arrays.toString(e.getStackTrace()));
-        }
-    }
-
-    private String getJsonResponse(String playersHand) throws Exception {
-        MvcResult result = mockMvc.perform(get("/play/0?hand=" + playersHand))
+        mockMvc.perform(get("/play/" + GameConfiguration.GAME_MODE + "?hand=" + randomInvalidHand))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andReturn();
-        MockHttpServletResponse response = result.getResponse();
-        return response.getContentAsString();
+                .andExpect(jsonPath("$.count").value(-1))
+                .andExpect(jsonPath("$.moves").isEmpty())
+                .andExpect(jsonPath("$.winner").value(""))
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.message").value(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER));
     }
+
+
 }

@@ -19,15 +19,12 @@ public class GameService {
     private static final Logger logger = Logger.getLogger(GameService.class);
 
     private final AtomicLong roundCounter = new AtomicLong();
-    private long roundCount;
 
     private GameStrategy gameStrategy;
-    private int gameMode;
 
     public GameService() {}
 
-    public void setGameModeAndStrategy(int gameMode) throws IllegalArgumentException {
-        this.gameMode = gameMode;
+    public void setStrategyByGameMode(int gameMode) throws IllegalArgumentException {
         if(gameMode == GameConfiguration.GAME_MODE_RPS) {
             this.gameStrategy = new RockPaperScissorsStrategy();
         } else if(gameMode == GameConfiguration.GAME_MODE_RPSW) {
@@ -41,18 +38,15 @@ public class GameService {
         moves.put(GameConfiguration.PLAYER, playersChoice);
         moves.put(GameConfiguration.COMPUTER, computersChoice);
 
-        incrementRoundCounter();
+        Round round = new Round(roundCounter.incrementAndGet(), moves);
 
-        String winner = gameStrategy.determineWinner(playersChoice, computersChoice);
+        String winner = gameStrategy.determineWinner(round, playersChoice, computersChoice);
+        round.setWinner(winner);
 
-        return new Round(roundCount, moves, winner);
-    }
-
-    private void incrementRoundCounter() {
-        roundCount = roundCounter.incrementAndGet();
+        return round;
     }
 
     public long getRoundCount() {
-        return roundCount;
+        return roundCounter.get();
     }
 }

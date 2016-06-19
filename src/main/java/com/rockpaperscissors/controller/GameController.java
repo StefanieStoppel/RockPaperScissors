@@ -6,10 +6,7 @@ import com.rockpaperscissors.model.OutputTemplate;
 import com.rockpaperscissors.model.Round;
 import com.rockpaperscissors.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 
@@ -17,7 +14,6 @@ import java.util.Collections;
 //Todo: send request
 
 @RestController
-@RequestMapping(value = "/play")
 public class GameController {
 
     @Autowired
@@ -26,27 +22,30 @@ public class GameController {
     @Autowired
     private GameConfiguration gameConfiguration;
 
-    @RequestMapping(value = "/{gameModeId}", produces = "application/json")
-    public Round rockPaperScissors(@PathVariable int gameModeId, @RequestParam(value="hand", required = false) String playersHand) {
+    @RequestMapping(value = "/play/{gameModeId}", produces = "application/json")
+    public @ResponseBody Round rockPaperScissors(@PathVariable int gameModeId, @RequestParam(value="hand", required = false) String playersHand) {
         Round round;
         if(GameConfiguration.isValidGameModeId(gameModeId)) {
             gameConfiguration.setGameMode(gameModeId);
-            gameService.setGameModeAndStrategy(gameModeId);
+            gameService.setStrategyByGameMode(gameModeId);
         } else {
-            return new Round(-1, Collections.emptyMap(), OutputTemplate.ERROR_INVALID_GAME_MODE);
+            round = new Round(-1, Collections.emptyMap());
+            round.setMessage(OutputTemplate.ERROR_INVALID_GAME_MODE);
         }
 
         if(GameConfiguration.isValidHand(playersHand)) {
             // Can potentially be empty
-            String computersChoice = HandFactory.getRandomValidHand(gameModeId);
-            if(GameConfiguration.isValidHand(computersChoice)) {
+            String computersHand = HandFactory.getRandomValidHand(gameModeId);
+            if(GameConfiguration.isValidHand(computersHand)) {
                 // Return an object of type Round to be displayed as JSON
-                round = gameService.playRound(playersHand, computersChoice);
+                round = gameService.playRound(playersHand, computersHand);
             } else {
-                round = new Round(-1, Collections.emptyMap(), OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
+                round = new Round(-1, Collections.emptyMap());
+                round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
             }
         } else {
-            round = new Round(-1, Collections.emptyMap(), OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
+            round = new Round(-1, Collections.emptyMap());
+            round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
         }
         return round;
     }
