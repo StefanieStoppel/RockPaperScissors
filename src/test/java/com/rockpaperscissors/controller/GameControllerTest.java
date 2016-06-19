@@ -47,6 +47,9 @@ public class GameControllerTest {
     @Autowired
     private GameService gameService;
 
+    @Autowired
+    GameConfiguration gameConfiguration;
+
     @Before
     public void setUp()
     {
@@ -56,6 +59,7 @@ public class GameControllerTest {
     @Test
     public void playRockPaperScissors_validHand() throws Exception {
         gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
+        gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPS);
         String randomValidHand = HandFactory.getRandomValidHand(GameConfiguration.GAME_MODE_RPS);
         logger.debug("RandomChoice: "+ randomValidHand);
 
@@ -65,6 +69,7 @@ public class GameControllerTest {
     @Test
     public void playRockPaperScissors_invalidHand() throws Exception {
         gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPS);
+        gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPS);
         String randomInvalidChoice = HandFactory.getRandomInvalidHand();
         logger.debug("InvalidChoice: " + randomInvalidChoice);
 
@@ -75,6 +80,7 @@ public class GameControllerTest {
     public void playRockPaperScissorsWell_validHand()  {
         // Set game mode to 0 = "Rock Paper Scissors"
         gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPSW);
+        gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPSW);
         String randomValidHand = HandFactory.getRandomValidHand(GameConfiguration.GAME_MODE_RPSW);
         logger.debug("ValidChoice: "+ randomValidHand);
 
@@ -85,6 +91,7 @@ public class GameControllerTest {
     public void playRockPaperScissorsWell_invalidHand()  {
         // Set game mode to 0 = "Rock Paper Scissors"
         gameService.setGameModeAndStrategy(GameConfiguration.GAME_MODE_RPSW);
+        gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPSW);
         String randomInvalidHand = HandFactory.getRandomInvalidHand();
         logger.debug("InvalidChoice: "+ randomInvalidHand);
 
