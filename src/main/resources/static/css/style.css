@@ -1,0 +1,29 @@
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+main {
+    height: 100%;
+}
+
+.header {
+    background-color: rgb(40, 96, 144);
+}
+
+.header h1 {
+    color: rgb(1, 1, 31);
+}
+
+.color-white {
+    color: rgba(245, 245, 245, 0.8);
+}
+
+.divider {
+    height: 1px;
+    width:100%;
+    display:block;
+    margin: 9px 0;
+    overflow: hidden;
+    background-color: #e5e5e5;
+}

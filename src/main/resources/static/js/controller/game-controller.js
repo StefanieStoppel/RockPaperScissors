@@ -1,11 +1,14 @@
 'use strict';
 
 App.controller('GameController', ['$scope', 'GameService', function($scope, GameService) {
+    $scope.gameMode = {
+        id: 0
+    };
     var self = this;
     self.round={count:null,moves:{},winner:null,message:''};
 
-    self.playRound = function(playersHand, gameModeId){
-        GameService.playRound(playersHand, gameModeId)
+    self.playRound = function(playersHand){
+        GameService.playRound(playersHand, $scope.gameMode.id)
             .then(
                 function(d) {
                     self.round = d;
@@ -18,10 +21,10 @@ App.controller('GameController', ['$scope', 'GameService', function($scope, Game
             );
     };
 
-    self.play = function(playersHand, gameModeId) {
+    self.play = function(playersHand) {
         console.log('Playing a round with hand ' + playersHand
-            + ' and game mode ' + gameModeId);
-        self.playRound(playersHand, gameModeId);
+            + ' and game mode ' + $scope.gameMode.id);
+        self.playRound(playersHand);
 
         self.reset();
     };
