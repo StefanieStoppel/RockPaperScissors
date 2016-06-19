@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html ng-app="rockPaperScissors" class="ng-cloak">
+<head>
+    <title>A "Rock Paper Scissors" implementation with Spring Boot</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <!-- Latest compiled and minified Bootstrap CSS from CDN -->
+<!--
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+-->
+</head>
+
+<body>
+<div ng-controller="GameController as controller">
+    <p>Round: {{controller.round.count}}</p>
+    <p>{{controller.round.output}}</p>
+    <a href="" ng-click="controller.play('rock', 0)" style="width: 100px; height: 100px; background-color: dodgerblue">Rock</a>
+    <a href="" ng-click="controller.play('paper', 0)" style="width: 100px; height: 100px; background-color: dodgerblue">Paper</a>
+    <a href="" ng-click="controller.play('scissors', 0)" style="width: 100px; height: 100px; background-color: dodgerblue">Scissors</a>
+</div>
+
+<!-- AngularJS resources -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+<script src="js/app.js"></script>
+<script src="js/service/game-service.js"></script>
+<script src="js/controller/game-controller.js"></script>
+</body>
+</html>
