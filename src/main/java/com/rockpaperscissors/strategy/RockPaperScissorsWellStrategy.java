@@ -1,20 +1,30 @@
 package com.rockpaperscissors.strategy;
 
-/**
- * @author Stefanie Stoppel
- */
-
 import com.rockpaperscissors.config.GameConfiguration;
 import com.rockpaperscissors.model.OutputTemplate;
 import com.rockpaperscissors.model.Round;
 import org.apache.log4j.Logger;
 
+/**
+ * Game strategy that determines the winner of "Rock, Paper, Scissors, Well".
+ * Rules:
+ * * Rock destroys scissors
+ * * Paper covers Rock
+ * * Scissors cut paper
+ * * Well swallows up rock
+ * * Well swallows up scissors
+ *
+ * @author Stefanie Stoppel
+ */
 public class RockPaperScissorsWellStrategy implements GameStrategy {
 
     private final static Logger logger = Logger.getLogger(RockPaperScissorsStrategy.class);
 
     @Override
     public boolean isValidChoice(String choice) {
+        if(choice == null) {
+            throw new IllegalArgumentException("isValidChoice called with null argument.");
+        }
         return choice.equals(GameConfiguration.ROCK)
                 || choice.equals(GameConfiguration.PAPER)
                 || choice.equals(GameConfiguration.SCISSORS)
@@ -26,11 +36,11 @@ public class RockPaperScissorsWellStrategy implements GameStrategy {
                                   final String computersChoice) {
         String winner = "";
         if(!isValidChoice(playersChoice)){
-            logger.debug(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
-            round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
+            logger.debug(OutputTemplate.ERROR_INVALID_HAND_PLAYER);
+            round.setMessage(OutputTemplate.ERROR_INVALID_HAND_PLAYER);
         } else if(!isValidChoice(computersChoice)) {
-            logger.debug(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
-            round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
+            logger.debug(OutputTemplate.ERROR_INVALID_HAND_COMPUTER);
+            round.setMessage(OutputTemplate.ERROR_INVALID_HAND_COMPUTER);
         } else if(!playersChoice.equals(computersChoice)){
             switch (playersChoice) {
                 case GameConfiguration.ROCK:

@@ -11,16 +11,18 @@ public class HandFactory {
 
     private static final String[] invalidChoices = {"jfshf", "üfj(", "$(§$KE", "", "-4", "..", "papr", "0034358325"};
 
+    private HandFactory(){}
+
     public static String getRandomInvalidHand() {
         return invalidChoices[ThreadLocalRandom.current().nextInt(0, invalidChoices.length)];
     }
 
-    public static String getRandomValidHand(int gameMode) {
+    public static String getRandomValidHand() {
         String randomChoice = "";
-        if(gameMode == GameConfiguration.GAME_MODE_RPS) {
+        if(GameConfiguration.GAME_MODE == GameConfiguration.GAME_MODE_RPS) {
             randomChoice = GameConfiguration.ROCK_PAPER_SCISSORS[ThreadLocalRandom.current().nextInt(0,
                     GameConfiguration.ROCK_PAPER_SCISSORS.length)];
-        } else if(gameMode == GameConfiguration.GAME_MODE_RPSW) {
+        } else if(GameConfiguration.GAME_MODE == GameConfiguration.GAME_MODE_RPSW) {
             randomChoice = GameConfiguration.ROCK_PAPER_SCISSORS_WELL[ThreadLocalRandom.current().nextInt(0,
                     GameConfiguration.ROCK_PAPER_SCISSORS_WELL.length)];
         }

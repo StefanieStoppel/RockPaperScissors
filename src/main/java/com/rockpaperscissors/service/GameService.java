@@ -13,6 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * This service plays a round of the chosen game mode when playRound() is called.
+ * It is responsible for choosing a game strategy depending on the
+ * game mode chosen by the user.
+ *
+ */
 @Service
 public class GameService {
 
@@ -29,10 +35,17 @@ public class GameService {
             this.gameStrategy = new RockPaperScissorsStrategy();
         } else if(gameMode == GameConfiguration.GAME_MODE_RPSW) {
             this.gameStrategy = new RockPaperScissorsWellStrategy();
+        } else {
+            throw new IllegalArgumentException("setStrategyByGameMode() called with illegal argument gameMode = " + gameMode);
         }
     }
 
     public Round playRound(String playersChoice, String computersChoice) {
+        String illegalArg = playersChoice == null ? "playersHand=null"
+                : (computersChoice == null ? "computersHand=null" : "");
+        if(!illegalArg.isEmpty()) {
+            throw new IllegalArgumentException("playRound() called with illegal argument: " + illegalArg);
+        }
         // Map contains: "Player" -> playersChoice, "Computer" -> computersChoice
         Map<String, String> moves = new LinkedHashMap<>();
         moves.put(GameConfiguration.PLAYER, playersChoice);
@@ -48,5 +61,9 @@ public class GameService {
 
     public long getRoundCount() {
         return roundCounter.get();
+    }
+
+    public GameStrategy getGameStrategy() {
+        return gameStrategy;
     }
 }

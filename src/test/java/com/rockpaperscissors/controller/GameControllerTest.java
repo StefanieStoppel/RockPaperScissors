@@ -2,7 +2,6 @@ package com.rockpaperscissors.controller;
 
 import com.rockpaperscissors.RockPaperScissorsApplication;
 import com.rockpaperscissors.config.GameConfiguration;
-import com.rockpaperscissors.helper.HandFactory;
 import com.rockpaperscissors.model.OutputTemplate;
 import com.rockpaperscissors.service.GameService;
 import org.apache.log4j.Logger;
@@ -25,6 +24,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
+ * Test class for GameController.
+ *
  * @author Stefanie Stoppel
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -56,7 +57,9 @@ public class GameControllerTest {
         gameService.setStrategyByGameMode(GameConfiguration.GAME_MODE_RPS);
         gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPS);
 
-        checkValidHand();
+        checkValidHand("rock");
+        checkValidHand("paper");
+        checkValidHand("scissors");
     }
 
     @Test
@@ -64,7 +67,10 @@ public class GameControllerTest {
         gameService.setStrategyByGameMode(GameConfiguration.GAME_MODE_RPS);
         gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPS);
 
-        checkInvalidHand();
+        checkInvalidHand("roc");
+        checkInvalidHand("r23");
+        checkInvalidHand("");
+        checkInvalidHand("&/$§)*Ä§'");
     }
 
     @Test
@@ -73,7 +79,10 @@ public class GameControllerTest {
         gameService.setStrategyByGameMode(GameConfiguration.GAME_MODE_RPSW);
         gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPSW);
 
-        checkValidHand();
+        checkValidHand("rock");
+        checkValidHand("paper");
+        checkValidHand("scissors");
+        checkValidHand("well");
     }
 
     @Test
@@ -82,14 +91,30 @@ public class GameControllerTest {
         gameService.setStrategyByGameMode(GameConfiguration.GAME_MODE_RPSW);
         gameConfiguration.setGameMode(GameConfiguration.GAME_MODE_RPSW);
 
-        checkInvalidHand();
+        checkInvalidHand("foo");
+        checkInvalidHand("bar");
+        checkInvalidHand("ABC");
+        checkInvalidHand("-1356822");
+        checkInvalidHand("");
+
+        checkInvalidHand(null);
     }
 
-    private void checkValidHand() throws Exception {
-        String randomValidHand = HandFactory.getRandomValidHand(GameConfiguration.GAME_MODE);
-        logger.debug("ValidChoice: "+ randomValidHand);
+    @Test
+    public void testInvalidGameMode() throws Exception {
+        mockMvc.perform(get("/play/" + -1 + "?hand=" + "rock"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.count").value(-1))
+                .andExpect(jsonPath("$.moves").isEmpty())
+                .andExpect(jsonPath("$.winner").value(is("")))
+                .andExpect(jsonPath("$.message").value(OutputTemplate.ERROR_INVALID_GAME_MODE));
+    }
 
-        mockMvc.perform(get("/play/" + GameConfiguration.GAME_MODE + "?hand=" + randomValidHand))
+    private void checkValidHand(String hand) throws Exception {
+        logger.debug("ValidChoice: "+ hand);
+
+        mockMvc.perform(get("/play/" + GameConfiguration.GAME_MODE + "?hand=" + hand))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("$.count").value(toIntExact(gameService.getRoundCount())))
@@ -98,18 +123,17 @@ public class GameControllerTest {
                 .andExpect(jsonPath("$.message").isEmpty());
     }
 
-    private void checkInvalidHand() throws Exception {
-        String randomInvalidHand = HandFactory.getRandomInvalidHand();
-        logger.debug("InvalidChoice: "+ randomInvalidHand);
+    private void checkInvalidHand(String hand) throws Exception {
+        logger.debug("InvalidChoice: "+ hand);
 
-        mockMvc.perform(get("/play/" + GameConfiguration.GAME_MODE + "?hand=" + randomInvalidHand))
+        mockMvc.perform(get("/play/" + GameConfiguration.GAME_MODE + "?hand=" + hand))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("$.count").value(-1))
                 .andExpect(jsonPath("$.moves").isEmpty())
                 .andExpect(jsonPath("$.winner").value(""))
                 .andExpect(jsonPath("$.message").isNotEmpty())
-                .andExpect(jsonPath("$.message").value(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER));
+                .andExpect(jsonPath("$.message").value(OutputTemplate.ERROR_INVALID_HAND_PLAYER));
     }
 
 

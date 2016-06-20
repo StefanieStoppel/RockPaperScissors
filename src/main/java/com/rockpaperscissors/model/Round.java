@@ -33,6 +33,9 @@ public class Round {
     }
 
     public void setWinner(String winner) {
+        if(winner == null) {
+            throw new IllegalArgumentException("setWinner() called with argument null");
+        }
         this.winner = winner;
     }
 
@@ -41,6 +44,9 @@ public class Round {
     }
 
     public void setMessage(String message) {
+        if(message == null) {
+            throw new IllegalArgumentException("setMessage() called with argument null");
+        }
         this.message = message;
     }
 }
