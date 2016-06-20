@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
  */
 
 /**
- * Todo: Look into parameterized tests and add that here if applicable.
+ * Todo: Look into parametrized tests and add that here if applicable.
  */
 public class HandFactoryTest {
 
