@@ -11,6 +11,8 @@ import org.apache.log4j.Logger;
  * * Rock destroys scissors
  * * Paper covers Rock
  * * Scissors cut paper
+ *
+ * @author Stefanie Stoppel
  */
 public class RockPaperScissorsStrategy implements GameStrategy {
 
@@ -18,6 +20,9 @@ public class RockPaperScissorsStrategy implements GameStrategy {
 
     @Override
     public boolean isValidChoice(String choice) {
+        if(choice == null) {
+            throw new IllegalArgumentException("isValidChoice called with null argument.");
+        }
         return choice.equals(GameConfiguration.ROCK) || choice.equals(GameConfiguration.PAPER) || choice.equals(GameConfiguration.SCISSORS);
     }
 

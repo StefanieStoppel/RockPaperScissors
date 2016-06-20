@@ -1,9 +1,5 @@
 package com.rockpaperscissors.strategy;
 
-/**
- * @author Stefanie Stoppel
- */
-
 import com.rockpaperscissors.config.GameConfiguration;
 import com.rockpaperscissors.model.OutputTemplate;
 import com.rockpaperscissors.model.Round;
@@ -17,6 +13,8 @@ import org.apache.log4j.Logger;
  * * Scissors cut paper
  * * Well swallows up rock
  * * Well swallows up scissors
+ *
+ * @author Stefanie Stoppel
  */
 public class RockPaperScissorsWellStrategy implements GameStrategy {
 
@@ -24,6 +22,9 @@ public class RockPaperScissorsWellStrategy implements GameStrategy {
 
     @Override
     public boolean isValidChoice(String choice) {
+        if(choice == null) {
+            throw new IllegalArgumentException("isValidChoice called with null argument.");
+        }
         return choice.equals(GameConfiguration.ROCK)
                 || choice.equals(GameConfiguration.PAPER)
                 || choice.equals(GameConfiguration.SCISSORS)
