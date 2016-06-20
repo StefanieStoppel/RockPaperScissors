@@ -2,9 +2,7 @@ package com.rockpaperscissors.model;
 
 import com.rockpaperscissors.RockPaperScissorsApplication;
 import com.rockpaperscissors.config.GameConfiguration;
-import com.rockpaperscissors.helper.HandFactory;
 import com.rockpaperscissors.service.GameService;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,72 +40,60 @@ public class RoundTests {
     }
 
     @Test
-    public void testDraw() {
-        setUpMoves(GameConfiguration.PAPER, GameConfiguration.PAPER);
+    public void testRoundFirstConstructor() {
+        setUpMoves(GameConfiguration.PAPER, GameConfiguration.ROCK);
 
-        Round r = new Round(roundCount, moves, "");
-        Round resultRound = gameService.playRound(GameConfiguration.PAPER, GameConfiguration.PAPER);
+        Round round = new Round(1, moves);
 
-        Assert.assertNotNull(resultRound);
-
-        Assert.assertEquals(r.getMoves(), resultRound.getMoves());
-        Assert.assertEquals(Strings.EMPTY, resultRound.getWinner());
+        Assert.assertEquals(1, round.getCount());
+        Assert.assertEquals(moves, round.getMoves());
+        Assert.assertEquals("", round.getWinner());
+        Assert.assertEquals("", round.getMessage());
     }
 
     @Test
-    public void testPlayerWins() {
-        setUpMoves(GameConfiguration.SCISSORS, GameConfiguration.PAPER);
-
-        Round r = new Round(roundCount, moves, GameConfiguration.PLAYER);
-        Round round = gameService.playRound(GameConfiguration.SCISSORS, GameConfiguration.PAPER);
-
-        Assert.assertNotNull(round);
-        Assert.assertEquals(r.getMoves(), round.getMoves());
-        Assert.assertEquals(r.getWinner(), round.getWinner());
-    }
-
-    @Test
-    public void testComputerWins() {
+    public void testRoundSecondConstructor() {
         setUpMoves(GameConfiguration.PAPER, GameConfiguration.SCISSORS);
 
-        Round r = new Round(roundCount, moves, GameConfiguration.COMPUTER);
-        Round round = gameService.playRound(GameConfiguration.PAPER, GameConfiguration.SCISSORS);
+        Round round = new Round(42, moves, GameConfiguration.COMPUTER);
 
-        Assert.assertNotNull(round);
-        Assert.assertEquals(r.getMoves(), round.getMoves());
-        Assert.assertEquals(r.getWinner(), round.getWinner());
+        Assert.assertEquals(42, round.getCount());
+        Assert.assertEquals(moves, round.getMoves());
+        Assert.assertEquals(GameConfiguration.COMPUTER, round.getWinner());
+        Assert.assertEquals("", round.getMessage());
     }
 
     @Test
-    public void testInvalidChoices() {
-        roundCount = roundCounter.longValue();
+    public void testSetRoundWinner() {
+        setUpMoves(GameConfiguration.PAPER, GameConfiguration.SCISSORS);
+        Round round = new Round(42, moves, GameConfiguration.COMPUTER);
+        round.setWinner(GameConfiguration.COMPUTER);
 
-        // 1) Player's choice valid, computer's choice invalid
-        String invalidChoice = HandFactory.getRandomInvalidHand();
-        setUpMoves(GameConfiguration.ROCK, invalidChoice);
-        Round round = gameService.playRound(GameConfiguration.ROCK, invalidChoice);
-
-        Assert.assertNotNull(round);
-        Assert.assertEquals(moves, round.getMoves());
-        Assert.assertEquals(Strings.EMPTY, round.getWinner());
-
-        // 2) Player's choice invalid, computer's choice valid
-        invalidChoice = HandFactory.getRandomInvalidHand();
-        setUpMoves(invalidChoice, GameConfiguration.SCISSORS);
-        round = gameService.playRound(invalidChoice, GameConfiguration.SCISSORS);
-
-        Assert.assertNotNull(round);
-        Assert.assertEquals(moves, round.getMoves());
-        Assert.assertEquals(Strings.EMPTY, round.getWinner());
-
-        // 3) Player's choice invalid, computer's choice invalid
-        invalidChoice = HandFactory.getRandomInvalidHand();
-        String invalidChoice2 = HandFactory.getRandomInvalidHand();
-        setUpMoves(invalidChoice, invalidChoice2);
-        round = gameService.playRound(invalidChoice, invalidChoice2);
-
-        Assert.assertNotNull(round);
-        Assert.assertEquals(moves, round.getMoves());
-        Assert.assertEquals(Strings.EMPTY, round.getWinner());
+        Assert.assertEquals(GameConfiguration.COMPUTER, round.getWinner());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetRoundWinner_IllegalArgumentException() {
+        setUpMoves(GameConfiguration.PAPER, GameConfiguration.SCISSORS);
+        Round round = new Round(42, moves, GameConfiguration.COMPUTER);
+        round.setWinner(null);
+    }
+
+    @Test
+    public void testSetRoundMessage() {
+        setUpMoves(GameConfiguration.PAPER, GameConfiguration.SCISSORS);
+        Round round = new Round(42, moves, GameConfiguration.COMPUTER);
+        round.setMessage(OutputTemplate.ERROR_INVALID_HAND_COMPUTER);
+
+        Assert.assertEquals(OutputTemplate.ERROR_INVALID_HAND_COMPUTER, round.getMessage());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetRoundMessage_IllegalArgumentException() {
+        setUpMoves(GameConfiguration.PAPER, GameConfiguration.SCISSORS);
+        Round round = new Round(42, moves, GameConfiguration.COMPUTER);
+        round.setMessage(null);
+    }
+
+
 }
