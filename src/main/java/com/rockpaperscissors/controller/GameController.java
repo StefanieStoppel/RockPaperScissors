@@ -39,7 +39,7 @@ public class GameController {
 
             if(GameConfiguration.isValidHand(playersHand)) {
                 // Can potentially be empty
-                String computersHand = HandFactory.getRandomValidHand(gameModeId);
+                String computersHand = HandFactory.getRandomValidHand();
                 if(GameConfiguration.isValidHand(computersHand)) {
                     // Return an object of type Round to be displayed as JSON
                     round = gameService.playRound(playersHand, computersHand);
