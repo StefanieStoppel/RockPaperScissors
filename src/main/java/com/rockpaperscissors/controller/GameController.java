@@ -45,11 +45,11 @@ public class GameController {
                     round = gameService.playRound(playersHand, computersHand);
                 } else {
                     round = new Round(-1, Collections.emptyMap());
-                    round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
+                    round.setMessage(OutputTemplate.ERROR_INVALID_HAND_COMPUTER);
                 }
             } else {
                 round = new Round(-1, Collections.emptyMap());
-                round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
+                round.setMessage(OutputTemplate.ERROR_INVALID_HAND_PLAYER);
             }
         } else {
             round = new Round(-1, Collections.emptyMap());

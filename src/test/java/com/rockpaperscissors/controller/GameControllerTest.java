@@ -133,7 +133,7 @@ public class GameControllerTest {
                 .andExpect(jsonPath("$.moves").isEmpty())
                 .andExpect(jsonPath("$.winner").value(""))
                 .andExpect(jsonPath("$.message").isNotEmpty())
-                .andExpect(jsonPath("$.message").value(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER));
+                .andExpect(jsonPath("$.message").value(OutputTemplate.ERROR_INVALID_HAND_PLAYER));
     }
 
 

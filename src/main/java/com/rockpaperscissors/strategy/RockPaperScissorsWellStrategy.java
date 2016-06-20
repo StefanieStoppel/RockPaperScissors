@@ -26,11 +26,11 @@ public class RockPaperScissorsWellStrategy implements GameStrategy {
                                   final String computersChoice) {
         String winner = "";
         if(!isValidChoice(playersChoice)){
-            logger.debug(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
-            round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_PLAYER);
+            logger.debug(OutputTemplate.ERROR_INVALID_HAND_PLAYER);
+            round.setMessage(OutputTemplate.ERROR_INVALID_HAND_PLAYER);
         } else if(!isValidChoice(computersChoice)) {
-            logger.debug(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
-            round.setMessage(OutputTemplate.ERROR_INVALID_CHOICE_COMPUTER);
+            logger.debug(OutputTemplate.ERROR_INVALID_HAND_COMPUTER);
+            round.setMessage(OutputTemplate.ERROR_INVALID_HAND_COMPUTER);
         } else if(!playersChoice.equals(computersChoice)){
             switch (playersChoice) {
                 case GameConfiguration.ROCK:
