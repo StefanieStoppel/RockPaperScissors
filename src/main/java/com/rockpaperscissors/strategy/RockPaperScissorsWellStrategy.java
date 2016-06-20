@@ -9,6 +9,15 @@ import com.rockpaperscissors.model.OutputTemplate;
 import com.rockpaperscissors.model.Round;
 import org.apache.log4j.Logger;
 
+/**
+ * Game strategy that determines the winner of "Rock, Paper, Scissors, Well".
+ * Rules:
+ * * Rock destroys scissors
+ * * Paper covers Rock
+ * * Scissors cut paper
+ * * Well swallows up rock
+ * * Well swallows up scissors
+ */
 public class RockPaperScissorsWellStrategy implements GameStrategy {
 
     private final static Logger logger = Logger.getLogger(RockPaperScissorsStrategy.class);
