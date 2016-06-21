@@ -14,13 +14,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static java.lang.Math.toIntExact;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.anyOf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -102,7 +103,10 @@ public class GameControllerTest {
 
     @Test
     public void testInvalidGameMode() throws Exception {
-        mockMvc.perform(get("/play/" + -1 + "?hand=" + "rock"))
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/play")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(createRoundStatsJson(-1, GameConfiguration.ROCK));
+        mockMvc.perform(builder)
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("$.count").value(-1))
@@ -114,7 +118,11 @@ public class GameControllerTest {
     private void checkValidHand(String hand) throws Exception {
         logger.debug("ValidChoice: "+ hand);
 
-        mockMvc.perform(get("/play/" + GameConfiguration.GAME_MODE + "?hand=" + hand))
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/play")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(createRoundStatsJson(GameConfiguration.GAME_MODE, hand));
+
+        mockMvc.perform(builder)
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("$.count").value(toIntExact(gameService.getRoundCount())))
@@ -126,15 +134,20 @@ public class GameControllerTest {
     private void checkInvalidHand(String hand) throws Exception {
         logger.debug("InvalidChoice: "+ hand);
 
-        mockMvc.perform(get("/play/" + GameConfiguration.GAME_MODE + "?hand=" + hand))
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/play")
+                .contentType(MediaType.APPLICATION_JSON)
+                        .content(createRoundStatsJson(GameConfiguration.GAME_MODE, hand));
+        mockMvc.perform(builder)
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(jsonPath("$.count").value(-1))
                 .andExpect(jsonPath("$.moves").isEmpty())
-                .andExpect(jsonPath("$.winner").value(""))
-                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andExpect(jsonPath("$.winner").value(is("")))
                 .andExpect(jsonPath("$.message").value(OutputTemplate.ERROR_INVALID_HAND_PLAYER));
     }
 
-
+    private static String createRoundStatsJson (int gameMode, String playersHand) {
+        return "{ \"gameMode\": \"" + gameMode + "\", " +
+                "\"playersHand\":\"" + playersHand + "\" }";
+    }
 }

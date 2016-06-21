@@ -5,6 +5,8 @@ import com.rockpaperscissors.config.GameConfiguration;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * HandFactory returns valid and invalid hands to be played in the game.
+ *
  * @author Stefanie Stoppel
  */
 public class HandFactory {
